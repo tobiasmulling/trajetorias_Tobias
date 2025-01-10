@@ -1,0 +1,22 @@
+﻿Subdimension ;Indicator;ID;Description;Unit
+Population;Geocode;geocode;municipality identifier;integer
+Population;Municipality;municipio;name of the municipality;string
+Population;Urban population in 2000;urb2000;urban population in 2000 (census);count
+Population;Rural population in 2000;rur2000;rural population in 2000 (census);count
+Population;Total population in 2000;tot2000;total population in 2000 (census);count
+Population;Proportion of urban population in 2000;prop_urb2000;proportion of urban pop in 2000;%
+Population;Proportion or rural population in 2000;prop_rur2000;proportion or rural pop in 2000;%
+Population;Urban population in 2010;urb2010;urban population in 2010 (census);count
+Population;Rural population in 2010;rur2010;rural population in 2010 (census);count
+Population;Total population in 2010;tot2010;total population in 2010 (census);count
+Population;Proportion of urban population in 2010;prop_urb2010;proportion of urban pop in 2010;%
+Population;Proportion or rural population in 2010;prop_rur2010;proportion or rural pop in 2010;%
+Population;Estimated population in 2006;pop_estimated2006;estimated pop by TCU;count
+Population;Estimated population in 2017;pop_estimated2017;estimated pop by TCU;count
+Population;Estimated urban population in 2006;urb2006e;prop_urb_2010 * estimated;%
+Population;Estimated rural population in 2006;rur2006e;prop_rur_2010 * estimated;%
+Population;Estimated urban population in 2017;urb2017e;prop_urb_2010 * estimated;%
+Population;Estimated rural population in 2017;rur2017e;prop_rur_2010 * estimated;%
+;;;;
+PS.;;;;
+There are 323 municipalities that did not exist in 2000, only in 2010. ;;;;

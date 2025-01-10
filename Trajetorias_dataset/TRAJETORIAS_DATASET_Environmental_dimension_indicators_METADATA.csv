@@ -1,0 +1,40 @@
+Dimension;Subdimension;Indicator;Description;Unity;Timeframe;Period;ID
+Environmental;Habitat loss;Deforestation;the total area of deforestation in the municipality between 2000 to 2006 is divided by its original* forest area;km2/km2;2000-2006;2006;deorg
+Environmental;Habitat loss;Deforestation;the total area of deforestation in the municipality between 2000 to 2006 is divided by its remaining forest area in 2000;km2/km2;2000-2006;2006;defor
+Environmental;Habitat loss;Deforestation;the total area of deforestation in the municipality between 2010 to 2016 is divided by its original* forest area;km2/km2;2010-2016;2017;deorg
+Environmental;Habitat loss;Deforestation;the total area of deforestation in the municipality between 2010 to 2016 is divided by its remaining forest area in 2010;km2/km2;2010-2016;2017;defor
+Environmental;Habitat loss;Forest degradation;the total area of forest degradation in the municipality between 2007 to 2017 is divided by its original* forest area;km2/km2;2007-2017;2017;dgorg
+Environmental;Habitat loss;Forest degradation;the total area of forest degradation between 2007 to 2017 is divided by its area with remaining forest in 2007;km2/km2;2007-2017;2017;dgfor
+Environmental;Habitat loss;Fires;proportion of the municipality area that experienced at least one burning event between 2001 and 2006;km2/km2;2001-2006;2006;fire
+Environmental;Habitat loss;Fires;proportion of the municipality area that experienced at least one burning event between 2012 and 2017;km2/km2;2012-2017;2017;fire
+Environmental;Habitat loss;Mining;proportion of the municipality area used for mining (industrial and artisanal) in 2006;km2/km2;2006;2006;mining
+Environmental;Habitat loss;Mining;proportion of the municipality area used for mining (industrial and artisanal) in 2017;km2/km2;2017;2017;mining
+Environmental;Habitat loss;Vegetation fragmentation;proportion of the municipality area classified as natural vegetation cores in 2006;km2/km2;2006;2006;core
+Environmental;Habitat loss;Vegetation fragmentation;proportion of the municipality area classified as natural vegetation cores in 2017;km2/km2;2017;2017;core
+Environmental;Habitat loss;Vegetation fragmentation;ratio between the total edge length (perimeter) of the natural vegetation patches within the municipality and the square rooted total area of these patches, in 2006;m/sqrt(m2);2006;2006;edge
+Environmental;Habitat loss;Vegetation fragmentation;ratio between the total edge (perimeter) of the natural vegetation patches within the municipality and the square rooted total area of these patches, in 2017;m/sqrt(m2);2017;2017;edge
+Environmental;Land Use and Land Cover;remnant forest;the remnant forest area in 2007 was divided by the original* forest area in the municipality;km2/km2;2007;2006;refor
+Environmental;Land Use and Land Cover;remnant forest;the remnant forest area in 2017 was divided by the original* forest area in the municipality;km2/km2;2017;2017;refor
+Environmental;Land Use and Land Cover;Secondary vegetation;proportion of the municipality area covered with secondary vegetation in 2006;km2/km2;2006;2006;secveg
+Environmental;Land Use and Land Cover;Secondary vegetation;proportion of the municipality area covered with secondary vegetation in 2017;km2/km2;2017;2017;secveg
+Environmental;Land Use and Land Cover;Pasture;proportion of the municipality area classified as pasture in 2006;km2/km2;2006;2006;pasture
+Environmental;Land Use and Land Cover;Pasture;proportion of the municipality area classified as pasture in 2017;km2/km2;2017;2017;pasture
+Environmental;Land Use and Land Cover;Crop;proportion of the municipality area classified as crop in 2006;km2/km2;2006;2006;crop
+Environmental;Land Use and Land Cover;Crop;proportion of the municipality area classified as crop in 2017;km2/km2;2017;2017;crop
+Environmental;Land Use and Land Cover;Urban area;proportion of the municipality area classified as urban in 2006;km2/km2;2006;2006;urban
+Environmental;Land Use and Land Cover;Urban area;proportion of the municipality area classified as urban in 2017;km2/km2;2017;2017;urban
+Environmental;Transportation networks;Roads network;the total length of roads within the municipality divided by the square root of its area, in 2010;m/sqrt(m2);2010;2006;roads
+Environmental;Transportation networks;Roads network;the total length of roads within the municipality divided by the square root of its area, in 2017;m/sqrt(m2);2017;2017;roads
+Environmental;Transportation networks;Waterways network;the total length of waterways (both main or inexpressive rivers) within the municipality divided by the square root of its area;m/sqrt(m2);2010;2017;river
+Environmental;Transportation networks;Ports;number of ports;integer;2017;2017;port
+Environmental;Climatic anomalies;Precipitation;mean positive precipitation anomaly area observed during the dry seasons from 1996-2006, divided by the total area;m2/m2;1996-2006;2006;precp
+Environmental;Climatic anomalies;Precipitation;mean negative precipitation anomaly area observed during the dry seasons from 1996-2006, divided by the total area;m2/m2;1996-2006;2006;precn
+Environmental;Climatic anomalies;Precipitation;mean positive precipitation anomaly area observed during the dry seasons from 2007-2017, divided by the total area;m2/m2;2007-2017;2017;precp
+Environmental;Climatic anomalies;Precipitation;mean negative precipitation anomaly area observed during the dry seasons from 2007-2017, divided by the total area;m2/m2;2007-2017;2017;precn
+Environmental;Climatic anomalies;Temperature;mean positive temperature anomaly area observed during the cold seasons from 1996-2006, divided by the total area;m2/m2;1996-2006;2006;tempp
+Environmental;Climatic anomalies;Temperature;mean positive temperature anomaly area observed during the cold seasons from 2007-2017, divided by the total area;m2/m2;2007-2017;2017;tempp
+;Municipalities;Geocode;municipality identifier;integer;;;geocode
+;Municipalities;Municipality;municipality name;string;;;municipality
+;State;State code;state identifier ;string;;;state_abbrev
+;State;State name;state name;string;;;state
+;Timeframe;Period;observation period;string;;;period

@@ -1,0 +1,9 @@
+﻿Dimension;Subdimension;Indicator;Description;Unit;ID
+Epidemiological;Vector-borne diseases;Geocode;municipality identifier;integer;geocode
+Epidemiological;Vector-borne diseases;Municipality;municipality name;string;municipality
+Epidemiological;Vector-borne diseases;State code;state identifier ;string;state_abbrev
+Epidemiological;Vector-borne diseases;Vector-borne disease;type of vector-borne disease (malaria, dengue, Chagas, VL, CL);name of diseases;disease
+Epidemiological;Vector-borne diseases;Period ;observation period - either 2004-2008 or 2015-2019 ;string;period 
+Epidemiological;Vector-borne diseases;Residential zone ;type of residential zone - rural, urban or total;rural or urban zones;zone 
+Epidemiological;Vector-borne diseases;Disease cases;number of reported cases per municipality of residence in each  5-year period;count;cases
+Epidemiological;Vector-borne diseases;Disease incidence;number of cases divided by the population in the middle of the period multiplied by the number of years of observation (5 years);incidence rate;inc

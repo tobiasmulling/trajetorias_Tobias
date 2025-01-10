@@ -1,0 +1,11 @@
+﻿Dimension;Subdimension;Indicator;Description;Unity;Timeframe;ID
+Socio-economic;Multidimensional Poverty Index;Multidimensional Poverty Incidence (H);Proportion of people identified as multidimensionally poor in the municipality.;%;2000 and 2010;h
+Socio-economic;Multidimensional Poverty Index;Multidimensional Poverty Intensity (A);Counting of the deprivations experienced by the people multidimensionally poor in the municipality;%;2000 and 2010;A
+Socio-economic;Multidimensional Poverty Index;Deprivations;Average of the municipal deprivations ;"dimensionless
+";2000 and 2010;carpon
+Socio-economic;Multidimensional Poverty Index;Multidimensional Poverty Index;It reflects the number of deprivations experienced by the individual at a given time in the municipality.;MPI = A*H;2000 and 2010;mpi
+Socio-economic;Multidimensional Poverty Index;Contribuition of the Health Dimension;Contribuition of the health dimension to the multidimensional Poverty ;%;2000 and 2010;csaude
+Socio-economic;Multidimensional Poverty Index;Contribuition of the Education Dimension;Contribuition of the education dimension to the multidimensional Poverty;%;2000 and 2010;ceduca
+Socio-economic;Multidimensional Poverty Index;Contribuition of the Live Conditions - habitation and sanitation;Contribuition of the dwelling and sanitation dimension to the multidimensional Poverty;%;2000 and 2010;ccv
+Socio-economic;Multidimensional Poverty Index;Contribuition of the Live Conditions - work and private consumer goods;Contribuition of the work and private consumer goods dimension to the multidimensional Poverty;%;2000 and 2010;cnv
+Socio-economic;Multidimensional Poverty Index;People ;Number of people multidimensionally poor in the municipality;count;2000 and 2010;totpescar

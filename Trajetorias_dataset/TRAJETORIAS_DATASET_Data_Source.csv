@@ -1,0 +1,24 @@
+﻿Dimension;Subdimension;Indicators;Source;Available in
+Environmental;Biodiversity loss;Deforestation;PRODES (Brazilian Amazon Deforestation Monitoring Project from INPE);http://terrabrasilis.dpi.inpe.br/downloads/
+Environmental;Biodiversity loss;Forest degradation;DEGRAD and DETER (Real-Time Deforestation Detection System) programs from INPE;http://www.obt.inpe.br/OBT/assuntos/programas/amazonia/degrad/acesso-ao-dados-do-degrad http://terrabrasilis.dpi.inpe.br/downloads/
+Environmental;Biodiversity loss;Fires;MODIS Burned Area Product;https://modis-fire.umd.edu/ba.html
+Environmental;Biodiversity loss;Mining;MAPBIOMAS Project (Collection 6);https://mapbiomas.org/colecoes-mapbiomas-1?cama_set_language=pt-BR
+Environmental;Biodiversity loss;Vegetation fragmentation;Camara et al., 2020;Câmara, G et al. (2020): Land use and land cover maps for Amazon biome in Brazil for 2001-2019 derived from MODIS time series (pangaea.de)
+Environmental;Land Use and Land Cover;Remnant forest;PRODES (Brazilian Amazon Deforestation Monitoring Project from INPE);http://terrabrasilis.dpi.inpe.br/downloads/
+Environmental;Land Use and Land Cover;Secondary vegetation;Camara et al., 2020;Câmara, G et al. (2020): Land use and land cover maps for Amazon biome in Brazil for 2001-2019 derived from MODIS time series (pangaea.de)
+Environmental;Land Use and Land Cover;Pasture;Camara et al., 2020;Câmara, G et al. (2020): Land use and land cover maps for Amazon biome in Brazil for 2001-2019 derived from MODIS time series (pangaea.de)
+Environmental;Land Use and Land Cover;Crop;Camara et al., 2020;Câmara, G et al. (2020): Land use and land cover maps for Amazon biome in Brazil for 2001-2019 derived from MODIS time series (pangaea.de)
+Environmental;Land Use and Land Cover;Urban area;MAPBIOMAS Project (Collection 6);https://mapbiomas.org/colecoes-mapbiomas-1?cama_set_language=pt-BR
+Environmental;Transportation networks;Roads network;LAPIG (Laboratory of Image Processing and Geoprocessing at the Federal University of Goiás) and RAISG (Amazon Network of Georeferenced Social and Environmental Information);Mapas y Publicaciones – RAISG (amazoniasocioambiental.org)
+Environmental;Transportation networks;Waterways network;DNIT (National Infrastructure and Transport Department) and ANTAQ (National Water Transport Agency);https://metadados.snirh.gov.br/geonetwork/srv/api/records/48e26e99-db01-45dc-a270-79f27680167b
+Environmental;Transportation networks;Ports;DNIT (National Infrastructure and Transport Department);https://servicos.dnit.gov.br/vgeo/
+Environmental;Climatic anomalies;Precipitation;WorldClim - Historical monthly weather data;https://www.worldclim.org/data/monthlywth.html#
+Environmental;Climatic anomalies;Minimum temperature;WorldClim - Historical monthly weather data;https://www.worldclim.org/data/monthlywth.html#
+Epidemiological ;Occurrence of diseases;Malaria;SIVEP-malária (Epidemiological Surveillance Information System);http://200.214.130.44/sivep_malaria/
+Epidemiological ;Occurrence of diseases;Chagas;DataSUS Tabnet (Notifyable Diseases Information System / SINAN - Brazil);https://datasus.saude.gov.br/informacoes-de-saude-tabnet/
+Epidemiological ;Occurrence of diseases;Visceral leishmaniasis;DataSUS Tabnet (Notifyable Diseases Information System / SINAN - Brazil);https://datasus.saude.gov.br/informacoes-de-saude-tabnet/
+Epidemiological ;Occurrence of diseases;Cutaneous leishmaniasis;DataSUS Tabnet (Notifyable Diseases Information System / SINAN - Brazil);https://datasus.saude.gov.br/informacoes-de-saude-tabnet/
+Epidemiological ;Occurrence of diseases;Dengue;DataSUS Tabnet (Notifyable Diseases Information System / SINAN - Brazil);https://datasus.saude.gov.br/informacoes-de-saude-tabnet/
+Socioeconomic;Population;Rural population;DataSUS Tabnet (Notifyable Diseases Information System / SINAN - Brazil);https://datasus.saude.gov.br/informacoes-de-saude-tabnet/
+Socioeconomic;Population;Urban population;DataSUS Tabnet (Notifyable Diseases Information System / SINAN - Brazil);https://datasus.saude.gov.br/informacoes-de-saude-tabnet/
+Economic;Poverty indices;Deprivations indicators;Microdata from the Demographic Census (IBGE - Brazilian Institute of Geography and Statistics);https://www.ibge.gov.br/estatisticas/sociais/trabalho/9662-censo-demografico-2010.html?=&t=microdados
