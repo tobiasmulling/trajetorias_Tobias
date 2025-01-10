@@ -1,0 +1,708 @@
+---
+title: "Exploratory description of the Trajetorias dataset"
+author: "Juan Salamanca"
+date: "2024-19-24"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE, fig.width = 10)
+```
+
+
+```{r}
+# install.packages("collapsibleTree")
+library(collapsibleTree)
+library(ggplot2)
+#install.packages("geojsonsf")
+library(geojsonsf)
+library(sf)
+library(dplyr)
+
+```
+
+
+Reference: Rorato, A.C., Dal’Asta, A.P., Lana, R.M. et al. Trajetorias: a dataset of environmental, epidemiological, and economic indicators for the Brazilian Amazon. Sci Data 10, 65 (2023). https://doi.org/10.1038/s41597-023-01962-1. 
+
+Data source: https://zenodo.org/records/7098053. 
+
+---
+
+
+### Structure of the dataset
+
+The Trajetorias dataset contains data of each municipality of Brazil's Legal Amazon in 2006 and 2017. It contains a rich set of indicators that allow analyzing the spatial and temporal relationship between economic trajectories, availability of natural resources and disease transmission [^1]. 
+
+* The dataset includes **environmental indicators**, calculated from satellite images, that characterize biodiversity loss, land use and cover patterns, transport network density and climate anomalies. 
+
+* There are **epidemiological indicators** of leishmaniasis, malaria, Chagas disease, and dengue. These infectious diseases are indicative of social and environmental vulnerability, which include poverty, lack of basic sanitation, and reduced availability of drinking water. 
+
+* The **socioeconomic indicators**, are rural and urban populations.
+
+* The **economic indicators**, characterize the multidimensional poverty index of rural and urban populations.
+
+  
+
+This is the overall structure of the dataset as described in the file *TRAJETORIAS_DATASET_Data_Source.csv*
+
+```{r, main_indicators}
+Main_indicators <- read.csv("../Trajetorias_dataset/TRAJETORIAS_DATASET_Data_Source.csv", sep=";")
+
+collapsibleTree(
+  Main_indicators,
+  hierarchy = c("Dimension", "Subdimension", "Indicators"),
+  width = 800,
+  zoomable = FALSE,
+  collapsed = FALSE
+)
+```
+
+---
+
+## Environmental dimension
+
+The environmental dimension is divided four subdimensions: Habitat loss, Land use and cover, Climate anomalies, and Transport network density. Each subdimension has several indicators. file:TRAJETORIAS_DATASET_Environmental_dimension_indicators.csv
+
+```{r, environment_data}
+Environmental_Meta <- read.csv("../Trajetorias_dataset/TRAJETORIAS_DATASET_Environmental_dimension_indicators_METADATA.csv", sep=";")
+
+Environmental_Meta <- na.omit(Environmental_Meta)
+
+collapsibleTree(
+  Environmental_Meta,
+  hierarchy = c("Subdimension", "Indicator", "ID"),
+  width = 800,
+  zoomable = FALSE,
+  collapsed = FALSE
+)
+
+Environmental <- read.csv("~/Documents/GitHub/Trajetorias_Brazil/Trajetorias_dataset/TRAJETORIAS_DATASET_Environmental_dimension_indicators.csv")
+
+
+# Brazil map
+AmazonBrazilGeo <- geojson_sf("~/Documents/GitHub/Trajetorias_Brazil/Brazilian_Legal_Amazon/Brazil_Amazon.geojson")
+
+# Convert the GECODIGO column to integer
+AmazonBrazilGeo$GEOCODIGO <- as.integer(AmazonBrazilGeo$GEOCODIGO)
+
+# Join the environmental indicators with the geospatial data
+AmazonBrazil_Environment <- left_join(AmazonBrazilGeo,Environmental,by=c( 'GEOCODIGO' ='geocode'))
+```
+
+```{r, colors}
+palette <- list("Habitat loss" = list("base" = list("fill"= "seashell", "outline" = "seashell3"),"indicators"= list(
+                  "Deforestation" =	"blueviolet",
+                  "Forest degradation"=	"indianred4",
+                  "Fires"=	"darkorange2",
+                  "Mining" =	"midnightblue",
+                  "Vegetation fragmentation"= "forestgreen")),
+                "Land Use and Land Cover" = list("base" = list("fill"= "lavender", "outline" = "lavenderblush3"),"indicators"= list(
+                  "Remnant forest" = "khaki4", 
+                  "Secondary vegetation" = "darkolivegreen", 
+                  "Pasture" = "darkgoldenrod4", 
+                  "Crop" = "chartreuse4", 
+                  "Urban area" = "deeppink4")),
+                "Transportation networks" = list("base" = list("fill"= "#FFEFFF", "outline" = "gray55"),"indicators"= list(
+                  "Roads network" = "darkorchid4",
+                  "Waterways network" = "hotpink4",
+                  "Ports" = "cadetblue")),
+                "Climate anomalies" = list("base" = list("fill"= "azure", "outline" = "azure3"),"indicators"= list(
+                  "Precipitation"= "steelblue",
+                  "Minimum Temperature" = "brown4")),
+                "Occurrence of diseases" = list("base" = list("fill"= "lightcyan", "outline" = "lightcyan3"),"indicators"= list(
+                  "Cutaneous leishmaniasis" = "grey90",
+                  "Visceral Leishmaniasis" = "grey90", 
+                  "Malaria" = "grey90", 
+                  "Chagas" = "grey90", 
+                  "Dengue" = "grey90")),
+                "Population" = list("base" = list("fill"= "#e3fff6", "outline" = "#9bebd2"),"indicators"= list(
+                  "Rural population" = "grey90", 
+                  "Urban population" = "grey90")),
+                "Poverty indices" = list("base" = list("fill"= "#e6f0ff", "outline" = "#c3d0f7"),"indicators"= list(
+                  "Deprivations indicators" = "grey90"))
+                )
+              
+```
+
+<div style="page-break-after: always"></div>
+
+#### 1. Subdimension Habitat Loss
+##### Indicator: Deforestation
+
+Data source: PRODES (Brazilian Amazon Deforestation Monitoring Project from INPE). Available in http://terrabrasilis.dpi.inpe.br/downloads/
+
+```{r, habitatLoss_Maps_deorg}
+
+# Drawing the maps
+AmazonBrazilMap <- ggplot(AmazonBrazil_Environment %>% filter(!is.na(period)), aes(fill = deorg)) 
+# add the geometry
+AmazonBrazilMap <- AmazonBrazilMap + geom_sf(color = palette$`Habitat loss`$base$outline, size = 0.1)
+# set color scale
+AmazonBrazilMap <- AmazonBrazilMap + scale_fill_gradient(
+  low = palette$`Habitat loss`$base$fill, 
+  high = palette$`Habitat loss`$indicators$Deforestation, 
+  limits = c(0, 1))
+# add title and subtitle
+AmazonBrazilMap <- AmazonBrazilMap + labs(title = "Deforestation between 2000-2006 and 2007-2017", 
+                                          subtitle = "Dimension: Environmental, Subdimension: Habitat loss, ID= deorg", 
+                                          caption = "The total area of deforestation in the municipality between 2000 to 2006 and 2010 to 2016 is divided by its original* forest area", 
+                                          fill = "Deforestation. km2/km2")
+# facets
+AmazonBrazilMap <- AmazonBrazilMap + facet_wrap(~period, drop = TRUE) 
+# style
+AmazonBrazilMap <- AmazonBrazilMap+ theme(plot.caption = element_text(size = 8),
+                                          axis.text.x = element_blank(), 
+                                          axis.text.y = element_blank(), 
+                                          axis.ticks = element_blank(), 
+                                          axis.title.x = element_blank(), 
+                                          axis.title.y = element_blank(),
+                                          panel.background = element_rect(fill = "transparent"),
+                                          legend.position = "bottom")
+# plot map
+AmazonBrazilMap
+```
+
+```{r, habitatLoss_Maps_defor}
+# Drawing the maps
+AmazonBrazilMap <- ggplot(AmazonBrazil_Environment %>% filter(!is.na(period)), aes(fill = defor)) 
+# add the geometry
+AmazonBrazilMap <- AmazonBrazilMap + geom_sf(color = palette$`Habitat loss`$base$outline, size = 0.1)
+# set color scale
+AmazonBrazilMap <- AmazonBrazilMap + scale_fill_gradient(
+  low = palette$`Habitat loss`$base$fill, 
+  high = palette$`Habitat loss`$indicators$Deforestation, 
+  limits = c(0, 1))
+# add title and subtitle
+AmazonBrazilMap <- AmazonBrazilMap + labs(title = "Deforestation between 2000-2006 and 2007-2017 relative to 2000", 
+                                          subtitle = "Dimension: Environmental, Subdimension: Habitat loss, ID defor",
+                                          caption = "The total area of deforestation in each municipality between 2000 to 2006 and 2010 to 2016 is divided by its remaining forest area in 2000", 
+                                          fill = "Deforestation relative to 2000. km2/km2")
+# facets
+AmazonBrazilMap <- AmazonBrazilMap + facet_wrap(~period, drop = TRUE) 
+# style
+AmazonBrazilMap <- AmazonBrazilMap+ theme(plot.caption = element_text(size = 8),axis.text.x = element_blank(), 
+  axis.text.y = element_blank(), axis.ticks = element_blank(), axis.title.x = element_blank(), axis.title.y = element_blank(),                                           panel.background = element_rect(fill = "transparent"),legend.position = "bottom")
+# plot map
+AmazonBrazilMap
+```
+
+##### Indicator: Forest degradation
+
+Data source: DEGRAD and DETER (Real-Time Deforestation Detection System) programs from INPE. Available in http://www.obt.inpe.br/OBT/assuntos/programas/amazonia/degrad/acesso-ao-dados-do-degrad http://terrabrasilis.dpi.inpe.br/downloads/
+
+```{r, habitatLoss_Maps_dgorg}
+
+# Drawing the maps
+AmazonBrazilMap <- ggplot(AmazonBrazil_Environment %>% filter(!is.na(period)), aes(fill = dgorg)) 
+# add the geometry
+AmazonBrazilMap <- AmazonBrazilMap + geom_sf(color = palette$`Habitat loss`$base$outline, size = 0.1)
+# set color scale
+AmazonBrazilMap <- AmazonBrazilMap + scale_fill_gradient(
+  low = palette$`Habitat loss`$base$fill, 
+  high = palette$`Habitat loss`$indicators$`Forest degradation`, 
+  limits = c(0, 1))
+# add title and subtitle
+AmazonBrazilMap <- AmazonBrazilMap + labs(title = "Forest degradation between 2007-2017", 
+                                          subtitle = "Dimension: Environmental, Subdimension: Habitat loss, ID: dgorg",
+                                          caption = "The total area of forest degradation in the municipality between 2007 to 2017 is divided by its original* forest area.", 
+                                          fill = "Forest degradation. km2/km2")
+# facets
+#AmazonBrazilMap <- AmazonBrazilMap + facet_wrap(~period, drop = TRUE) 
+# style
+AmazonBrazilMap <- AmazonBrazilMap+ theme(plot.caption = element_text(size = 8),axis.text.x = element_blank(), 
+  axis.text.y = element_blank(), axis.ticks = element_blank(), axis.title.x = element_blank(), axis.title.y = element_blank(),                                           panel.background = element_rect(fill = "transparent"),legend.position = "bottom")
+# plot map
+AmazonBrazilMap
+```
+
+```{r, habitatLoss_Maps_dgfor}
+
+# Drawing the maps
+AmazonBrazilMap <- ggplot(AmazonBrazil_Environment %>% filter(!is.na(period)), aes(fill = dgfor)) 
+# add the geometry
+AmazonBrazilMap <- AmazonBrazilMap + geom_sf(color = palette$`Habitat loss`$base$outline, size = 0.1)
+# set color scale
+AmazonBrazilMap <- AmazonBrazilMap + scale_fill_gradient(
+  low = palette$`Habitat loss`$base$fill, 
+  high = palette$`Habitat loss`$indicators$`Forest degradation`,
+  limits = c(0, 1))
+# add title and subtitle
+AmazonBrazilMap <- AmazonBrazilMap + labs(title = "Forest degradation between 2007-2017 relative to 2007", 
+                                          subtitle = "Dimension: Environmental, Subdimension: Habitat loss",
+                                          caption = "	the total area of forest degradation between 2007 to 2017 is divided by its area with remaining forest in 2007", 
+                                          fill = "Forest degradation relative to 2007. km2/km2")
+# facets
+#AmazonBrazilMap <- AmazonBrazilMap + facet_wrap(~period, drop = TRUE) 
+# style
+AmazonBrazilMap <- AmazonBrazilMap+ theme(plot.caption = element_text(size = 8),axis.text.x = element_blank(), 
+  axis.text.y = element_blank(), axis.ticks = element_blank(), axis.title.x = element_blank(), axis.title.y = element_blank(),                                           panel.background = element_rect(fill = "transparent"),legend.position = "bottom")
+# plot map
+AmazonBrazilMap
+```
+
+##### Indicator: Fires
+
+Data source: MODIS Burned Area Product. Available at https://modis-fire.umd.edu/ba.html
+
+```{r, habitatLoss_Maps_fire}
+
+# Drawing the maps
+AmazonBrazilMap <- ggplot(AmazonBrazil_Environment%>% filter(!is.na(period)), aes(fill = fire)) 
+# add the geometry
+AmazonBrazilMap <- AmazonBrazilMap + geom_sf(color = palette$`Habitat loss`$base$outline, size = 0.1)
+# set color scale
+AmazonBrazilMap <- AmazonBrazilMap + scale_fill_gradient(
+  low = palette$`Habitat loss`$base$fill, 
+  high = palette$`Habitat loss`$indicators$Fires, 
+  limits = c(0, 1))
+# add title and subtitle
+AmazonBrazilMap <- AmazonBrazilMap + labs(title = "Municipalities with burning events 2006 and 2017", 
+                                          subtitle = "Dimension: Environmental, Subdimension: Habitat loss, ID: fire",
+                                          caption = "Proportion of the municipality area that experienced at least one burning event between 2001 and 2006 and 2012 and 2017",
+                                          fill = "Proportion of burning events. km2/km2")
+# facets
+AmazonBrazilMap <- AmazonBrazilMap + facet_wrap(~period, drop = TRUE) 
+# style
+AmazonBrazilMap <- AmazonBrazilMap+ theme(plot.caption = element_text(size = 8),axis.text.x = element_blank(), 
+  axis.text.y = element_blank(), axis.ticks = element_blank(), axis.title.x = element_blank(), axis.title.y = element_blank(),                                           panel.background = element_rect(fill = "transparent"),legend.position = "bottom")
+# plot map
+AmazonBrazilMap
+```
+
+##### Indicator: Mining
+
+Data source: MAPBIOMAS Project (Collection 6). Available at https://mapbiomas.org/colecoes-mapbiomas-1?cama_set_language=pt-BR
+
+```{r, habitatLoss_Maps_minig}
+
+# Drawing the maps
+AmazonBrazilMap <- ggplot(AmazonBrazil_Environment%>% filter(!is.na(period)), aes(fill = asin(sqrt(mining))) )
+# add the geometry
+AmazonBrazilMap <- AmazonBrazilMap + geom_sf(color = palette$`Habitat loss`$base$outline, size = 0.1)
+# set color scale
+AmazonBrazilMap <- AmazonBrazilMap + scale_fill_gradient(
+  low = palette$`Habitat loss`$base$fill, 
+  high = palette$`Habitat loss`$indicators$Mining)
+# add title and subtitle
+AmazonBrazilMap <- AmazonBrazilMap + labs(title = "Mining 2006 and 2017", 
+                                          subtitle = "Dimension: Environmental, Subdimension: Habitat loss, ID: mining",
+                                          caption = "Proportion of the municipality area used for mining (industrial and artisanal) in 2006 and 2017",
+                                          fill = "Mining. km2/km2. Arcsine Square Root Transformation")
+# facets
+AmazonBrazilMap <- AmazonBrazilMap + facet_wrap(~period, drop = TRUE) 
+# style
+AmazonBrazilMap <- AmazonBrazilMap+ theme(plot.caption = element_text(size = 8),axis.text.x = element_blank(), 
+  axis.text.y = element_blank(), axis.ticks = element_blank(), axis.title.x = element_blank(), axis.title.y = element_blank(),                                           panel.background = element_rect(fill = "transparent"),legend.position = "bottom")
+# plot map
+AmazonBrazilMap
+```
+
+##### Indicator: Vegetation fragmentation
+
+Data source: Camara et al., 2020. Available at Câmara, G et al. (2020): Land use and land cover maps for Amazon biome in Brazil for 2001-2019 derived from MODIS time series (pangaea.de)
+
+```{r, habitatLoss_Maps_fragmentation_core}
+
+# Drawing the maps
+AmazonBrazilMap <- ggplot(AmazonBrazil_Environment%>% filter(!is.na(period)), aes(fill = core))
+# add the geometry
+AmazonBrazilMap <- AmazonBrazilMap + geom_sf(color = palette$`Habitat loss`$base$outline, size = 0.1)
+# set color scale
+AmazonBrazilMap <- AmazonBrazilMap + scale_fill_gradient(
+  low = palette$`Habitat loss`$base$fill, 
+  high = palette$`Habitat loss`$indicators$`Vegetation fragmentation`)
+# add title and subtitle
+AmazonBrazilMap <- AmazonBrazilMap + labs(title = "Natural vegetation cores in 2006 and 2017", 
+                                          subtitle = "Dimension: Environmental, Subdimension: Habitat loss, ID: core",
+                                          caption = "Proportion of the municipality area classified as natural vegetation cores in 2006 and 2017",
+                                          fill = "Natural vegetation area. km2/km2")
+# facets
+AmazonBrazilMap <- AmazonBrazilMap + facet_wrap(~period, drop = TRUE) 
+# style
+AmazonBrazilMap <- AmazonBrazilMap+ theme(plot.caption = element_text(size = 8),axis.text.x = element_blank(), 
+  axis.text.y = element_blank(), axis.ticks = element_blank(), axis.title.x = element_blank(), axis.title.y = element_blank(),                                           panel.background = element_rect(fill = "transparent"),legend.position = "bottom")
+# plot map
+AmazonBrazilMap
+```
+
+Data source: Camara et al., 2020. Available at Câmara, G et al. (2020): Land use and land cover maps for Amazon biome in Brazil for 2001-2019 derived from MODIS time series (pangaea.de)
+
+```{r, habitatLoss_Maps_fragmentation_edge}
+
+# Drawing the maps
+AmazonBrazilMap <- ggplot(AmazonBrazil_Environment%>% filter(!is.na(period)), aes(fill = edge))
+# add the geometry
+AmazonBrazilMap <- AmazonBrazilMap + geom_sf(color = palette$`Habitat loss`$base$outline, size = 0.1)
+# set color scale
+AmazonBrazilMap <- AmazonBrazilMap + scale_fill_gradient(
+  low = palette$`Habitat loss`$base$fill, 
+  high = palette$`Habitat loss`$indicators$`Vegetation fragmentation`)
+# add title and subtitle
+AmazonBrazilMap <- AmazonBrazilMap + labs(title = "Perimeter of natural vegetation 2006 and 2017", 
+                                          subtitle = "Dimension: Environmental, Subdimension: Habitat loss, ID: edge",
+                                          caption = "Ratio between the total edge length (perimeter) of the natural vegetation patches within the municipality and the square rooted total area of these patches, in 2006 and 2017",
+                                          fill = "Perimeter of natural vegetation area. m/sqrt(m2)")
+# facets
+AmazonBrazilMap <- AmazonBrazilMap + facet_wrap(~period, drop = TRUE) 
+# style
+AmazonBrazilMap <- AmazonBrazilMap+ theme(plot.caption = element_text(size = 8),axis.text.x = element_blank(), 
+  axis.text.y = element_blank(), axis.ticks = element_blank(), axis.title.x = element_blank(), axis.title.y = element_blank(),                                           panel.background = element_rect(fill = "transparent"),legend.position = "bottom")
+# plot map
+AmazonBrazilMap
+```
+
+---
+
+
+
+#### 2. Subdimension Land Use and Land Recovery
+##### Indicator: Remnant forest
+
+Data source: PRODES (Brazilian Amazon Deforestation Monitoring Project from INPE). Available in http://terrabrasilis.dpi.inpe.br/downloads/
+
+```{r, landUse_Maps_refor}
+
+# Drawing the maps
+AmazonBrazilMap <- ggplot(AmazonBrazil_Environment %>% filter(!is.na(period)), aes(fill = refor)) 
+# add the geometry
+AmazonBrazilMap <- AmazonBrazilMap + geom_sf(color = palette$`Land Use and Land Cover`$base$outline, size = 0.1)
+# set color scale
+AmazonBrazilMap <- AmazonBrazilMap + scale_fill_gradient(
+  low = palette$`Land Use and Land Cover`$base$fill, 
+  high = palette$`Land Use and Land Cover`$indicators$`Remnant forest`, 
+  limits = c(0, 1))
+# add title and subtitle
+AmazonBrazilMap <- AmazonBrazilMap + labs(title = "Remnant forest in 2007 and 2017", 
+                                          subtitle = "Dimension: Environmental, Subdimension: Land Use and Land Cover, ID= refor", 
+                                          caption = "The remnant forest area in 2007 and 2017 were divided by the original* forest area in the municipality", 
+                                          fill = "Remnant forest. km2/km2")
+# facets
+AmazonBrazilMap <- AmazonBrazilMap + facet_wrap(~period, drop = TRUE) 
+# style
+AmazonBrazilMap <- AmazonBrazilMap+ theme(plot.caption = element_text(size = 8),axis.text.x = element_blank(), 
+  axis.text.y = element_blank(), axis.ticks = element_blank(), axis.title.x = element_blank(), axis.title.y = element_blank(),                                           panel.background = element_rect(fill = "transparent"),legend.position = "bottom")
+# plot map
+AmazonBrazilMap
+```
+
+##### Indicator: Secondary vegetation
+
+Data source: Camara et al., 2020. Available at Câmara, G et al. (2020): Land use and land cover maps for Amazon biome in Brazil for 2001-2019 derived from MODIS time series (pangaea.de)
+
+
+```{r, landUse_Maps_secveg}
+
+# Drawing the maps
+AmazonBrazilMap <- ggplot(AmazonBrazil_Environment %>% filter(!is.na(period)), aes(fill = secveg)) 
+# add the geometry
+AmazonBrazilMap <- AmazonBrazilMap + geom_sf(color = palette$`Land Use and Land Cover`$base$outline, size = 0.1)
+# set color scale
+AmazonBrazilMap <- AmazonBrazilMap + scale_fill_gradient(
+  low = palette$`Land Use and Land Cover`$base$fill, 
+  high = palette$`Land Use and Land Cover`$indicators$`Secondary vegetation`, 
+  limits = c(0, 1))
+# add title and subtitle
+AmazonBrazilMap <- AmazonBrazilMap + labs(title = "Secondary vegetation in 2007 and 2017", 
+                                          subtitle = "Dimension: Environmental, Subdimension: Land Use and Land Cover, ID= secveg", 
+                                          caption = "Proportion of the municipality area covered with secondary vegetation in 2006 and 2017
+", 
+                                          fill = "Secondary vegetation. km2/km2")
+# facets
+AmazonBrazilMap <- AmazonBrazilMap + facet_wrap(~period, drop = TRUE) 
+# style
+AmazonBrazilMap <- AmazonBrazilMap+ theme(plot.caption = element_text(size = 8),axis.text.x = element_blank(), 
+  axis.text.y = element_blank(), axis.ticks = element_blank(), axis.title.x = element_blank(), axis.title.y = element_blank(),                                           panel.background = element_rect(fill = "transparent"),legend.position = "bottom")
+# plot map
+AmazonBrazilMap
+```
+
+##### Indicator: Pasture
+
+Data source: Camara et al., 2020. Available at Câmara, G et al. (2020): Land use and land cover maps for Amazon biome in Brazil for 2001-2019 derived from MODIS time series (pangaea.de)
+
+
+```{r, landUse_Maps_pasture}
+
+# Drawing the maps
+AmazonBrazilMap <- ggplot(AmazonBrazil_Environment %>% filter(!is.na(period)), aes(fill = pasture)) 
+# add the geometry
+AmazonBrazilMap <- AmazonBrazilMap + geom_sf(color = palette$`Land Use and Land Cover`$base$outline, size = 0.1)
+# set color scale
+AmazonBrazilMap <- AmazonBrazilMap + scale_fill_gradient(
+  low = palette$`Land Use and Land Cover`$base$fill, 
+  high = palette$`Land Use and Land Cover`$indicators$Pasture, 
+  limits = c(0, 1))
+# add title and subtitle
+AmazonBrazilMap <- AmazonBrazilMap + labs(title = "Pasture areas in 2006 and 2017", 
+                                          subtitle = "Dimension: Environmental, Subdimension: Land Use and Land Cover, ID= pasture", 
+                                          caption = "Proportion of the municipality area classified as pasture in 2006 and 2017
+", 
+                                          fill = "Pasture area. km2/km2")
+# facets
+AmazonBrazilMap <- AmazonBrazilMap + facet_wrap(~period, drop = TRUE) 
+# style
+AmazonBrazilMap <- AmazonBrazilMap+ theme(plot.caption = element_text(size = 8),axis.text.x = element_blank(), 
+  axis.text.y = element_blank(), axis.ticks = element_blank(), axis.title.x = element_blank(), axis.title.y = element_blank(),                                           panel.background = element_rect(fill = "transparent"),legend.position = "bottom")
+# plot map
+AmazonBrazilMap
+```
+
+##### Indicator: Crop
+
+Data source: Camara et al., 2020. Available at Câmara, G et al. (2020): Land use and land cover maps for Amazon biome in Brazil for 2001-2019 derived from MODIS time series (pangaea.de)
+
+
+```{r, landUse_Maps_crop}
+
+# Drawing the maps
+AmazonBrazilMap <- ggplot(AmazonBrazil_Environment %>% filter(!is.na(period)), aes(fill = crop)) 
+# add the geometry
+AmazonBrazilMap <- AmazonBrazilMap + geom_sf(color = palette$`Land Use and Land Cover`$base$outline, size = 0.1)
+# set color scale
+AmazonBrazilMap <- AmazonBrazilMap + scale_fill_gradient(
+  low = palette$`Land Use and Land Cover`$base$fill, 
+  high = palette$`Land Use and Land Cover`$indicators$Crop, 
+  limits = c(0, 1))
+# add title and subtitle
+AmazonBrazilMap <- AmazonBrazilMap + labs(title = "Crop areas in 2006 and 2017", 
+                                          subtitle = "Dimension: Environmental, Subdimension: Land Use and Land Cover, ID= pasture", 
+                                          caption = "Proportion of the municipality area classified as crop in 2006 and 2017", 
+                                          fill = "Crop areas. km2/km2")
+# facets
+AmazonBrazilMap <- AmazonBrazilMap + facet_wrap(~period, drop = TRUE) 
+# style
+AmazonBrazilMap <- AmazonBrazilMap+ theme(plot.caption = element_text(size = 8),axis.text.x = element_blank(), 
+  axis.text.y = element_blank(), axis.ticks = element_blank(), axis.title.x = element_blank(), axis.title.y = element_blank(),                                           panel.background = element_rect(fill = "transparent"),legend.position = "bottom")
+# plot map
+AmazonBrazilMap
+```
+
+##### Indicator: Urban area
+
+Data source: MAPBIOMAS Project (Collection 6)
+Available at https://mapbiomas.org/colecoes-mapbiomas-1?cama_set_language=pt-BR
+
+
+```{r, landUse_Maps_urban}
+
+# Drawing the maps
+AmazonBrazilMap <- ggplot(AmazonBrazil_Environment %>% filter(!is.na(period)), aes(fill = asin(sqrt(urban)))) 
+# add the geometry
+AmazonBrazilMap <- AmazonBrazilMap + geom_sf(color = palette$`Land Use and Land Cover`$base$outline, size = 0.1)
+# set color scale
+AmazonBrazilMap <- AmazonBrazilMap + scale_fill_gradient(
+  low = palette$`Land Use and Land Cover`$base$fill, 
+  high = palette$`Land Use and Land Cover`$indicators$`Urban area`, 
+  limits = c(0, 1))
+# add title and subtitle
+AmazonBrazilMap <- AmazonBrazilMap + labs(title = "Urban area in 2006 and 2017", 
+                                          subtitle = "Dimension: Environmental, Subdimension: Land Use and Land Cover, ID= urban", 
+                                          caption = "Proportion of the municipality area classified as urban in 2006 and 2017", 
+                                          fill = "Urban area. Arcsine Squared root transformation. km2/km2")
+# facets
+AmazonBrazilMap <- AmazonBrazilMap + facet_wrap(~period, drop = TRUE) 
+# style
+AmazonBrazilMap <- AmazonBrazilMap+ theme(plot.caption = element_text(size = 8),axis.text.x = element_blank(), 
+  axis.text.y = element_blank(), axis.ticks = element_blank(), axis.title.x = element_blank(), axis.title.y = element_blank(),                                           panel.background = element_rect(fill = "transparent"),legend.position = "bottom")
+# plot map
+AmazonBrazilMap
+```
+
+---
+
+
+#### 3. Transportation Networks
+##### Indicator: Roads networks
+
+Data source: LAPIG (Laboratory of Image Processing and Geoprocessing at the Federal University of Goiás) and RAISG (Amazon Network of Georeferenced Social and Environmental Information). Available at Mapas y Publicaciones – RAISG (amazoniasocioambiental.org)
+
+
+```{r, transportation_Maps_road}
+
+# Drawing the maps
+AmazonBrazilMap <- ggplot(AmazonBrazil_Environment %>% filter(!is.na(period)), aes(fill = road)) 
+# add the geometry
+AmazonBrazilMap <- AmazonBrazilMap + geom_sf(color = palette$`Transportation networks`$base$outline, size = 0.1)
+# set color scale
+AmazonBrazilMap <- AmazonBrazilMap + scale_fill_gradient(
+  low = palette$`Transportation networks`$base$fill, 
+  high = palette$`Transportation networks`$indicators$`Roads network`, 
+  limits = c(0, 1))
+# add title and subtitle
+AmazonBrazilMap <- AmazonBrazilMap + labs(title = "Roads in 2007 and 2017", 
+                                          subtitle = "Dimension: Environmental, Subdimension: Transportation Networks, ID= road", 
+                                          caption = "The total length of roads within the municipality divided by the square root of its area, in 2010 and 2017
+", 
+                                          fill = "Roads. m/sqrt(m2)
+")
+# facets
+AmazonBrazilMap <- AmazonBrazilMap + facet_wrap(~period, drop = TRUE) 
+# style
+AmazonBrazilMap <- AmazonBrazilMap+ theme(plot.caption = element_text(size = 8),axis.text.x = element_blank(), 
+  axis.text.y = element_blank(), axis.ticks = element_blank(), axis.title.x = element_blank(), axis.title.y = element_blank(),                                           panel.background = element_rect(fill = "transparent"),legend.position = "bottom")
+# plot map
+AmazonBrazilMap
+```
+
+##### Indicator: Waterways network
+
+Data source: DNIT (National Infrastructure and Transport Department) and ANTAQ (National Water Transport Agency). Available at https://metadados.snirh.gov.br/geonetwork/srv/api/records/48e26e99-db01-45dc-a270-79f27680167b
+
+```{r, transportation_Maps_river}
+
+# Drawing the maps
+AmazonBrazilMap <- ggplot(AmazonBrazil_Environment %>% filter(!is.na(period)), aes(fill = river)) 
+# add the geometry
+AmazonBrazilMap <- AmazonBrazilMap + geom_sf(color = palette$`Transportation networks`$base$outline, size = 0.1)
+# set color scale
+AmazonBrazilMap <- AmazonBrazilMap + scale_fill_gradient(
+  low = palette$`Transportation networks`$base$fill, 
+  high = palette$`Transportation networks`$indicators$`Waterways network`, 
+  limits = c(0, 1))
+# add title and subtitle
+AmazonBrazilMap <- AmazonBrazilMap + labs(title = "Waterways in 2010", 
+                                          subtitle = "Dimension: Environmental, Subdimension: Transportation Networks, ID= river", 
+                                          caption = "The total length of waterways (both main or inexpressive rivers) within the municipality divided by the square root of its area", 
+                                          fill = "Roads. m/sqrt(m2)
+")
+# facets
+#AmazonBrazilMap <- AmazonBrazilMap + facet_wrap(~period, drop = TRUE) 
+# style
+AmazonBrazilMap <- AmazonBrazilMap+ theme(plot.caption = element_text(size = 8),axis.text.x = element_blank(), 
+  axis.text.y = element_blank(), axis.ticks = element_blank(), axis.title.x = element_blank(), axis.title.y = element_blank(),                                           panel.background = element_rect(fill = "transparent"),legend.position = "bottom")
+# plot map
+AmazonBrazilMap
+```
+---
+
+##### Indicator: Ports
+
+Data source: DNIT (National Infrastructure and Transport Department). Available at https://servicos.dnit.gov.br/vgeo/
+
+
+```{r, transportation_Maps_port}
+
+# Drawing the maps
+AmazonBrazilMap <- ggplot(AmazonBrazil_Environment %>% filter(!is.na(period)), aes(fill = port)) 
+# add the geometry
+AmazonBrazilMap <- AmazonBrazilMap + geom_sf(color = palette$`Transportation networks`$base$outline, size = 0.1)
+# set color scale
+AmazonBrazilMap <- AmazonBrazilMap + scale_fill_gradient(
+  low = palette$`Transportation networks`$base$fill, 
+  high = palette$`Transportation networks`$indicators$Ports)
+# add title and subtitle
+AmazonBrazilMap <- AmazonBrazilMap + labs(title = "Number of ports in 2010", 
+                                          subtitle = "Dimension: Environmental, Subdimension: Transportation Networks, ID= port", 
+                                          caption = "Number of ports", 
+                                          fill = "Ports
+")
+# facets
+#AmazonBrazilMap <- AmazonBrazilMap + facet_wrap(~period, drop = TRUE) 
+# style
+AmazonBrazilMap <- AmazonBrazilMap+ theme(plot.caption = element_text(size = 8),axis.text.x = element_blank(), 
+  axis.text.y = element_blank(), axis.ticks = element_blank(), axis.title.x = element_blank(), axis.title.y = element_blank(),                                           panel.background = element_rect(fill = "transparent"),legend.position = "bottom")
+# plot map
+AmazonBrazilMap
+```
+---
+
+
+
+---
+
+
+
+#### 4. Climate Anomalies
+##### Indicator: Precipitation
+
+Data source: WorldClim - Historical monthly weather data
+Available at https://www.worldclim.org/data/monthlywth.html#
+
+```{r, climate_Maps_precp}
+
+# Drawing the maps
+AmazonBrazilMap <- ggplot(AmazonBrazil_Environment %>% filter(!is.na(period)), aes(fill = precp)) 
+# add the geometry
+AmazonBrazilMap <- AmazonBrazilMap + geom_sf(color = palette$`Climate anomalies`$base$outline, size = 0.1)
+# set color scale
+AmazonBrazilMap <- AmazonBrazilMap + scale_fill_gradient(
+  low = palette$`Climate anomalies`$base$fill, 
+  high = palette$`Climate anomalies`$indicators$Precipitation, 
+  limits = c(0, 1))
+# add title and subtitle
+AmazonBrazilMap <- AmazonBrazilMap + labs(title = "Mean positive precipitation anomaly area bewteen 1996-2006 and 2007-2017", 
+                                          subtitle = "Dimension: Environmental, Subdimension: Climate Anomalies, ID= precp", 
+                                          caption = "Mean positive precipitation anomaly area observed during the dry seasons from 1996-2006 and 2007-2017, divided by the total area", 
+                                          fill = "Precipitation area. m2/m2")
+# facets
+AmazonBrazilMap <- AmazonBrazilMap + facet_wrap(~period, drop = TRUE) 
+# style
+AmazonBrazilMap <- AmazonBrazilMap+ theme(plot.caption = element_text(size = 8),axis.text.x = element_blank(), 
+  axis.text.y = element_blank(), axis.ticks = element_blank(), axis.title.x = element_blank(), axis.title.y = element_blank(),                                           panel.background = element_rect(fill = "transparent"),legend.position = "bottom")
+# plot map
+AmazonBrazilMap
+```
+
+```{r, climate_Maps_precn}
+
+# Drawing the maps
+AmazonBrazilMap <- ggplot(AmazonBrazil_Environment %>% filter(!is.na(period)), aes(fill = precn)) 
+# add the geometry
+AmazonBrazilMap <- AmazonBrazilMap + geom_sf(color = palette$`Climate anomalies`$base$outline, size = 0.1)
+# set color scale
+AmazonBrazilMap <- AmazonBrazilMap + scale_fill_gradient(
+  low = palette$`Climate anomalies`$base$fill, 
+  high = palette$`Climate anomalies`$indicators$Precipitation, 
+  limits = c(0, 1))
+# add title and subtitle
+AmazonBrazilMap <- AmazonBrazilMap + labs(title = "Mean negative precipitation anomaly area bewteen 1996-2006 and 2007-2017", 
+                                          subtitle = "Dimension: Environmental, Subdimension: Climate Anomalies, ID= precn", 
+                                          caption = "Mean negative precipitation anomaly area observed during the dry seasons from 1996-2006
+ and 2007-2017, divided by the total area", 
+                                          fill = "Precipitation area. m2/m2")
+# facets
+AmazonBrazilMap <- AmazonBrazilMap + facet_wrap(~period, drop = TRUE) 
+# style
+AmazonBrazilMap <- AmazonBrazilMap+ theme(plot.caption = element_text(size = 8),axis.text.x = element_blank(), 
+  axis.text.y = element_blank(), axis.ticks = element_blank(), axis.title.x = element_blank(), axis.title.y = element_blank(),                                           panel.background = element_rect(fill = "transparent"),legend.position = "bottom")
+# plot map
+AmazonBrazilMap
+```
+
+##### Indicator: Temperature
+
+Data source: WorldClim - Historical monthly weather data
+Available at https://www.worldclim.org/data/monthlywth.html#
+
+```{r, climate_Maps_tempp}
+
+# Drawing the maps
+AmazonBrazilMap <- ggplot(AmazonBrazil_Environment %>% filter(!is.na(period)), aes(fill = tempp)) 
+# add the geometry
+AmazonBrazilMap <- AmazonBrazilMap + geom_sf(color = palette$`Climate anomalies`$base$outline, size = 0.1)
+# set color scale
+AmazonBrazilMap <- AmazonBrazilMap + scale_fill_gradient(
+  low = palette$`Climate anomalies`$base$fill, 
+  high = palette$`Climate anomalies`$indicators$`Minimum Temperature`, 
+  limits = c(0, 1))
+# add title and subtitle
+AmazonBrazilMap <- AmazonBrazilMap + labs(title = "Mean positive temperature anomaly area bewteen 1996-2006 and 2007-2017", 
+                                          subtitle = "Dimension: Environmental, Subdimension: Climate Anomalies, ID= tempp", 
+                                          caption = "Mean positive temperature anomaly area observed during the cold seasons from 1996-2006 and 2007-2017, divided by the total area", 
+                                          fill = "Temperature area. m2/m2")
+# facets
+AmazonBrazilMap <- AmazonBrazilMap + facet_wrap(~period, drop = TRUE) 
+# style
+AmazonBrazilMap <- AmazonBrazilMap+ theme(plot.caption = element_text(size = 8),axis.text.x = element_blank(), 
+  axis.text.y = element_blank(), axis.ticks = element_blank(), axis.title.x = element_blank(), axis.title.y = element_blank(),                                           panel.background = element_rect(fill = "transparent"),legend.position = "bottom")
+# plot map
+AmazonBrazilMap
+```
+
+
+
+
+### Notes
+[^1]:(Rewrote from original published at https://github.com/Trajetorias-Sinbiose/Trajetorias_dataset.)
